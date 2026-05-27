@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kashish Gupta — Game UI/UX Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #08080c;
+    --bg2:      #0e0e14;
+    --bg3:      #161620;
+    --card:     #111118;
+    --card-hover: #18181f;
+    --accent:   #BB2425;
+    --accent-dim: rgba(187,36,37,0.15);
+    --accent-border: rgba(187,36,37,0.3);
+    --text:     #f0f0f5;
+    --text2:    #8888a0;
+    --text3:    #44445a;
+    --border:   rgba(255,255,255,0.055);
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+    --radius:    16px;
+    --radius-sm: 8px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* noise */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 9999; opacity: 0.5;
+  }
+
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+    padding: 18px 5vw;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(8,8,12,0.85);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: var(--font-display); font-weight: 800; font-size: 17px;
+    color: var(--text); text-decoration: none; letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 30px; list-style: none; }
+  .nav-links a {
+    font-size: 12px; font-weight: 500; color: var(--text2);
+    text-decoration: none; letter-spacing: 0.8px; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent) !important;
+    color: #fff !important;
+    padding: 7px 18px; border-radius: 100px;
+    font-weight: 600 !important;
+    transition: opacity 0.2s !important;
+  }
+  .nav-cta:hover { opacity: 0.82 !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 130px 5vw 90px;
+    position: relative; overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; border-radius: 50%;
+    filter: blur(130px); pointer-events: none;
+  }
+  .hero-glow-1 {
+    width: 520px; height: 520px;
+    background: rgba(187,36,37,0.1);
+    top: -80px; right: -60px;
+  }
+  .hero-glow-2 {
+    width: 400px; height: 400px;
+    background: rgba(187,36,37,0.05);
+    bottom: 60px; left: -80px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 600; color: var(--accent);
+    letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 30px;
+    animation: fadeIn 0.6s ease 0.1s both;
+  }
+  .hero-eyebrow::before {
+    content: ''; width: 28px; height: 1px; background: var(--accent);
+  }
+
+  .hero h1 {
+    font-family: var(--font-body);
+    font-size: clamp(56px, 9vw, 118px);
+    font-weight: 800; line-height: 0.92;
+    letter-spacing: -4px; margin-bottom: 36px; max-width: 920px;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .hero h1 .muted { color: var(--text3); }
+  .hero h1 .dot { color: var(--accent); }
+
+  .hero-sub {
+    font-size: clamp(15px, 1.4vw, 18px); color: var(--text2);
+    max-width: 460px; line-height: 1.75; margin-bottom: 52px;
+    font-weight: 300; animation: fadeUp 0.7s ease 0.35s both;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+
+  .hero-actions {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp 0.7s ease 0.45s both;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent); color: #fff;
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    padding: 13px 26px; border-radius: 100px; text-decoration: none;
+    transition: transform 0.2s, opacity 0.2s; letter-spacing: 0.2px;
+  }
+  .btn-primary:hover { transform: translateY(-2px); opacity: 0.88; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; color: var(--text2);
+    font-family: var(--font-body); font-size: 13px; font-weight: 500;
+    padding: 13px 26px; border-radius: 100px;
+    border: 1px solid var(--border); text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+  .hero-stats {
+    display: flex; gap: 52px; margin-top: 88px;
+    padding-top: 52px; border-top: 1px solid var(--border);
+    flex-wrap: wrap; animation: fadeUp 0.7s ease 0.6s both;
+  }
+  .stat-number {
+    font-family: var(--font-display); font-size: 38px; font-weight: 800;
+    color: var(--accent); line-height: 1; margin-bottom: 5px;
+  }
+  .stat-label {
+    font-size: 11px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 1.2px; font-weight: 500;
+  }
+
+  /* ── SECTIONS ── */
+  section { padding: 100px 5vw; }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10px; font-weight: 700; color: var(--accent);
+    letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: clamp(30px, 3.8vw, 50px);
+    font-weight: 800; letter-spacing: -1.5px; line-height: 1.05;
+    margin-bottom: 14px;
+  }
+  .section-sub {
+    font-size: 15px; color: var(--text2); max-width: 460px;
+    line-height: 1.75; font-weight: 300; margin-bottom: 60px;
+  }
+
+  /* ── PROJECTS ── */
+  #projects { background: var(--bg); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+
+  .project-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    text-decoration: none; display: block;
+    transition: transform 0.3s, border-color 0.3s, background 0.3s;
+    position: relative;
+  }
+  .project-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-border);
+    background: var(--card-hover);
+  }
+  .project-card.col7  { grid-column: span 7; }
+  .project-card.col5  { grid-column: span 5; }
+  .project-card.col6  { grid-column: span 6; }
+  .project-card.col4  { grid-column: span 4; }
+
+  .proj-img {
+    width: 100%; aspect-ratio: 16/9;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .proj-img img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.4s;
+  }
+  .project-card:hover .proj-img img { transform: scale(1.04); }
+
+  /* placeholder when no image */
+  .proj-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 52px;
+  }
+
+  .proj-badge {
+    position: absolute; top: 12px; right: 12px;
+    background: rgba(8,8,12,0.82); backdrop-filter: blur(8px);
+    border: 1px solid var(--border); border-radius: 100px;
+    font-size: 10px; font-weight: 600; color: var(--text2);
+    padding: 4px 10px; letter-spacing: 0.4px; text-transform: uppercase;
+  }
+  .proj-badge.live {
+    background: var(--accent-dim);
+    border-color: var(--accent-border);
+    color: var(--accent);
+  }
+
+  .proj-body { padding: 20px 22px 22px; }
+
+  .proj-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 9px; }
+  .tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.4px;
+    text-transform: uppercase; color: var(--text3);
+    background: var(--bg3); padding: 3px 8px; border-radius: 4px;
+  }
+
+  .proj-name {
+    font-family: var(--font-display); font-size: 19px; font-weight: 700;
+    color: var(--text); letter-spacing: -0.4px; margin-bottom: 6px;
+  }
+  .proj-desc { font-size: 13px; color: var(--text2); line-height: 1.65; font-weight: 300; }
+
+  .proj-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border);
+  }
+  .proj-stat { font-size: 12px; color: var(--accent); font-weight: 600; }
+  .proj-arrow {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text3); font-size: 13px;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+  }
+  .project-card:hover .proj-arrow {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+
+  /* image bg gradients per game */
+  .bg-rummy    { background: linear-gradient(140deg,#180508,#2a0810,#180508); }
+  .bg-fruit    { background: linear-gradient(140deg,#060e06,#0b1c0b,#060e06); }
+  .bg-domino   { background: linear-gradient(140deg,#060c08,#0a1710,#060c08); }
+  .bg-solitaire{ background: linear-gradient(140deg,#120d04,#1e1608,#120d04); }
+  .bg-blast    { background: linear-gradient(140deg,#050810,#0b1020,#050810); }
+  .bg-pixel    { background: linear-gradient(140deg,#050c0c,#0b1a18,#050c0c); }
+  .bg-roblox   { background: linear-gradient(140deg,#0a0714,#141020,#0a0714); }
+
+  /* ── CLIENT TEASER ── */
+  .client-teaser {
+    margin-top: 14px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 36px 40px;
+  }
+  .client-teaser-label {
+    font-size: 10px; font-weight: 700; color: var(--accent);
+    letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .client-teaser-title {
+    font-family: var(--font-display); font-size: 22px;
+    font-weight: 700; letter-spacing: -0.4px; margin-bottom: 6px;
+  }
+  .client-teaser-desc {
+    font-size: 14px; color: var(--text2); font-weight: 300; margin-bottom: 20px;
+    max-width: 560px;
+  }
+  .client-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+  .client-chip {
+    font-size: 12px; color: var(--text2);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 100px; padding: 6px 14px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .client-chip::before { content: '🔒'; font-size: 10px; }
+
+  /* ── EXPLORATIONS ── */
+  #explorations { background: var(--bg2); }
+  .exp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 12px;
+  }
+  .exp-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 22px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .exp-card:hover { border-color: var(--accent-border); transform: translateY(-3px); }
+  .exp-icon { font-size: 30px; margin-bottom: 12px; display: block; }
+  .exp-name {
+    font-family: var(--font-display); font-size: 14px;
+    font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .exp-type {
+    font-size: 10px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 600;
+  }
+  .exp-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 14px;
+  background: var(--bg3);
+}
+
+.exp-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+
+.exp-card:hover .exp-img img {
+  transform: scale(1.04);
+}
+
+/* keep icon cards consistent with image cards */
+.exp-icon {
+  font-size: 30px;
+  margin-bottom: 12px;
+  display: block;
+  height: 0;
+  padding-bottom: 75%;
+  position: relative;
+  background: var(--bg3);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+  /* ── ABOUT ── */
+  #about { background: var(--bg); }
+  .about-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 80px; align-items: start;
+  }
+  .about-text p {
+    font-size: 15px; color: var(--text2); line-height: 1.85;
+    font-weight: 300; margin-bottom: 18px;
+  }
+  .about-text p strong { color: var(--text); font-weight: 500; }
+  .about-text p em { color: var(--accent); font-style: normal; font-weight: 400; }
+
+  .skills-block { margin-bottom: 36px; }
+  .skills-label {
+    font-size: 10px; font-weight: 700; color: var(--text3);
+    letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px;
+  }
+  .skills-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .skill {
+    font-size: 12px; font-weight: 500; color: var(--text2);
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 100px; padding: 5px 14px;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .skill:hover { border-color: var(--accent-border); color: var(--text); }
+  .skill.hi {
+    background: var(--accent-dim);
+    border-color: var(--accent-border);
+    color: #e06060;
+  }
+
+  /* ── EXPERIENCE ── */
+  #experience { background: var(--bg2); }
+  .exp-list { display: flex; flex-direction: column; gap: 3px; max-width: 820px; }
+
+  .exp-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 30px 34px;
+    transition: border-color 0.2s; position: relative; overflow: hidden;
+  }
+  .exp-item::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--accent); opacity: 0; transition: opacity 0.2s;
+  }
+  .exp-item:hover { border-color: var(--accent-border); }
+  .exp-item:hover::before { opacity: 1; }
+
+  .exp-top {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 16px;
+    margin-bottom: 18px; flex-wrap: wrap;
+  }
+  .exp-company {
+    font-family: var(--font-display); font-size: 19px;
+    font-weight: 700; color: var(--text);
+    letter-spacing: -0.4px; margin-bottom: 3px;
+  }
+  .exp-role { font-size: 13px; color: var(--accent); font-weight: 500; }
+  .exp-date {
+    font-size: 11px; color: var(--text3); white-space: nowrap;
+    padding: 4px 12px; background: var(--bg3);
+    border-radius: 100px; border: 1px solid var(--border);
+  }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .exp-bullets li {
+    font-size: 13px; color: var(--text2); line-height: 1.65;
+    font-weight: 300; padding-left: 16px; position: relative;
+  }
+  .exp-bullets li::before {
+    content: '—'; position: absolute; left: 0;
+    color: var(--accent); font-size: 11px; top: 2px;
+  }
+
+  .edu-item {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 26px 30px;
+    display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 14px;
+  }
+  .edu-degree {
+    font-family: var(--font-display); font-size: 17px;
+    font-weight: 700; color: var(--text); margin-bottom: 4px;
+  }
+  .edu-school { font-size: 13px; color: var(--text2); font-weight: 300; }
+  .edu-year {
+    font-size: 11px; color: var(--text3);
+    padding: 4px 12px; background: var(--card);
+    border-radius: 100px; border: 1px solid var(--border);
+  }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--bg); text-align: center; }
+  .contact-inner { max-width: 580px; margin: 0 auto; }
+  .contact-title {
+    font-family: var(--font-display);
+    font-size: clamp(42px, 6vw, 76px);
+    font-weight: 800; letter-spacing: -2.5px;
+    line-height: 0.95; margin-bottom: 22px;
+  }
+  .contact-title span { color: var(--accent); }
+  .contact-sub {
+    font-size: 15px; color: var(--text2); font-weight: 300;
+    margin-bottom: 44px; line-height: 1.75;
+  }
+  .contact-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .contact-link {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 12px; font-weight: 600; color: var(--text2);
+    text-decoration: none; padding: 11px 22px;
+    border: 1px solid var(--border); border-radius: 100px;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .contact-link:hover {
+    border-color: var(--accent-border); color: var(--text);
+    background: var(--accent-dim);
+  }
+  .contact-link.primary {
+    background: var(--accent); border-color: var(--accent); color: #fff;
+  }
+  .contact-link.primary:hover {
+    background: transparent; color: var(--accent);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 28px 5vw;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center;
+    justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+  .footer-name { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text3); }
+  .footer-note { font-size: 11px; color: var(--text3); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .reveal {
+    opacity: 0; transform: translateY(22px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .project-card.col7, .project-card.col5,
+    .project-card.col6, .project-card.col4 { grid-column: span 12; }
+    .about-grid { grid-template-columns: 1fr; gap: 48px; }
+    .nav-links { display: none; }
+    .hero h1 { letter-spacing: -2.5px; }
+    .hero-stats { gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Kashish<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#projects">Work</a></li>
+    <li><a href="#explorations">Explorations</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#contact" class="nav-cta">Get in touch</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow hero-glow-1"></div>
+  <div class="hero-glow hero-glow-2"></div>
+
+  <div class="hero-eyebrow">Game UI/UX Designer &nbsp;·&nbsp; Open to Work</div>
+
+  <h1>
+    Kashish<br>
+    <span class="muted">Gupta<span class="dot">.</span></span>
+  </h1>
+
+  <p class="hero-sub">
+    Making games look and feel better, <strong>one screen at a time.</strong><br>
+    Designing game interfaces end-to-end — across mobile, AR, and TV — independently, from first concept to final pixel.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#projects" class="btn-primary">
+      View my work
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M8 3l3.5 3.5L8 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#contact" class="btn-ghost">Let's talk</a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-number">16+</div>
+      <div class="stat-label">Projects designed</div>
+    </div>
+    <div>
+      <div class="stat-number">15k+</div>
+      <div class="stat-label">Play Store downloads</div>
+    </div>
+    <div>
+      <div class="stat-number">1 yr</div>
+      <div class="stat-label">Industry experience</div>
+    </div>
+    <div>
+      <div class="stat-number">4</div>
+      <div class="stat-label">Platforms — Mobile, AR, TV, Web</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="eyebrow">Selected Work</div>
+  <h2 class="section-title reveal">Games I've designed.</h2>
+  <p class="section-sub reveal">UI/UX across mobile, AR, and TV — concept to final screens, independently.</p>
+
+  <div class="projects-grid">
+
+    <!-- GIN RUMMY — hero -->
+    <a href="https://play.google.com/store/apps/details?id=com.apexdreamstudio.ginrummyclub" target="_blank" class="project-card col7 reveal">
+      <div class="proj-img bg-rummy">
+          
+          <img src="/photo-1.png" alt="Gin Rummy Club">
+      
+        <div class="proj-placeholder"></div>
+        <div class="proj-badge live">Live on Play Store</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-tags">
+          <span class="tag">Card Game</span><span class="tag">Mobile</span>
+          <span class="tag">Figma</span><span class="tag">iOS &amp; Android</span>
+        </div>
+        <div class="proj-name">Gin Rummy Club</div>
+        <div class="proj-desc">Premium gold and red UI with lights and glow effects. Multiple game modes — menus, HUD, popups, win/lose states, Play Store assets — all designed from scratch.</div>
+        <div class="proj-footer">
+          <span class="proj-stat">Live on Play Store</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- FRUIT MERGE -->
+    <a href="https://play.google.com/store/apps/details?id=com.InfiniteSwipeLabs.FruitMerge" target="_blank" class="project-card col5 reveal" style="transition-delay:0.07s">
+      <div class="proj-img bg-fruit">
+      
+        <img src="/Fruit Merge.png" alt="Fruit Merge">
+      
+        <div class="proj-placeholder"></div>
+        <div class="proj-badge live">10,000+ Downloads</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-tags">
+          <span class="tag">Casual</span><span class="tag">Mobile</span><span class="tag">Play Store</span>
+        </div>
+        <div class="proj-name">Fruit Merge Drop Mania</div>
+        <div class="proj-desc">Complete UI design plus full Play Store asset suite — screenshots, game icon, feature graphic, and promotional posters. 10,000+ downloads.</div>
+        <div class="proj-footer">
+          <span class="proj-stat">10,000+ downloads</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- BANANA BOUNCE -->
+    <a href="https://play.google.com/store/apps/details?id=com.InfiniteSwipeLabs.BananaBounce" target="_blank" class="project-card col6 reveal" style="transition-delay:0.1s">
+      <div class="proj-img bg-domino">
+      <img src="/Banana bounce.png" alt="Dominoes">
+        <div class="proj-placeholder"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-tags">
+          <span class="tag">Arcade</span><span class="tag">Mobile</span><span class="tag">Playstore</span><span class="tag">Contibuting Designer</span>
+        </div>
+        <div class="proj-name">Banana Bounce Monkey Dash</div>
+        <div class="proj-desc">Designed all monkey character skins,complete popup UI, and home screen. Created the full Play Store asset suite — screenshots, promotional posters, and graphic imagery. 5,000+ downloads.</div>
+        <div class="proj-footer">
+          <span class="proj-stat">5,000+ Downloads</span>
+        </div>
+      </div>
+    </a>
+
+    <!-- SOLITAIRE -->
+    <a href="#" class="project-card col6 reveal" style="transition-delay:0.13s">
+      <div class="proj-img bg-solitaire">
+        <img src="/Solitaire.png" alt="Solitaire">
+        <div class="proj-placeholder"></div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-tags">
+          <span class="tag">Card Game</span><span class="tag">Mobile</span><span class="tag">Figma</span>
+        </div>
+        <div class="proj-name">Solitaire</div>
+        <div class="proj-desc">Parchment and mystic castle visual language — calm, immersive, and atmospheric. Every screen designed independently, from main menu to end-game.</div>
+        <div class="proj-footer">
+          <span class="proj-stat">Complete UI design</span>
+        </div>
+      </div>
+    </a>
+
+    <!--Cozy cafe merge-->
+    <a href="#" class="project-card col6 reveal" style="transition-delay:0.25s">
+  <div class="proj-img" style="background: linear-gradient(140deg,#0d0a06,#1a1208,#0d0a06);">
+    <!-- REPLACE: <img src="images/cozy-cafe-cover.png" alt="Cozy Cafe Merge"> -->
+    <div class="proj-placeholder">☕</div>
+    <div class="proj-badge">In Development · Targeting Poki</div>
+  </div>
+  <div class="proj-body">
+    <div class="proj-tags">
+      <span class="tag">Merge Game</span>
+      <span class="tag">Casual</span>
+      <span class="tag">Web</span>
+      <span class="tag">Android</span>
+      <span class="tag">Personal Project</span>
+    </div>
+    <div class="proj-name">Cozy Cafe Merge</div>
+    <div class="proj-desc">Personal project — designing complete UI for a cozy cafe merge game built with a developer collaborator. Main game scene completed. Warm, stylised UI scoped commercially from day one. Targeting Poki release with potential for client licensing.</div>
+    <div class="proj-footer">
+      <span class="proj-stat">In Development</span>
+    </div>
+  </div>
+</a>
+
+  </div>
+
+  <!-- CLIENT TEASER -->
+  <div class="client-teaser reveal">
+    <div class="client-teaser-label">Client Work · NDA Protected</div>
+    <div class="client-teaser-title">AR &amp; TV Experiences</div>
+    <div class="client-teaser-desc">Large-scale client projects including AR fashion try-on, AR voxel builder, and interactive TV installations. Available to walk through during interviews.</div>
+    <div class="client-chips">
+      <span class="client-chip">AR Dressup — Fashion AR Game</span>
+      <span class="client-chip">Voxel AR — Futuristic Builder UI</span>
+      <span class="client-chip">Fruity Ninja — TV Installation</span>
+      <span class="client-chip">Magoticon — Airport AR Experience</span>
+      <span class="client-chip">Brainrot Heist — Roblox Game UI</span>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORATIONS -->
+<section id="explorations">
+  <div class="eyebrow">Personal Work</div>
+  <h2 class="section-title reveal">Beyond the brief.</h2>
+  <p class="section-sub reveal">3D, animation, and game dev explorations — learning by building things for myself.</p>
+
+  <div class="exp-grid">
+
+  <div class="exp-card reveal">
+    <div class="exp-img">
+      <img src="/potion bottle.png" alt="Stylized Potion Bottle">
+    </div>
+    <div class="exp-name">Stylized Potion Bottle</div>
+    <div class="exp-type">3D · Blender</div>
+  </div>
+
+  <div class="exp-card reveal" style="transition-delay:0.05s">
+    <div class="exp-img">
+      <img src="/Untitled.png" alt="Low Poly Ramen Bowl">
+    </div>
+    <div class="exp-name">Low Poly Ramen Bowl</div>
+    <div class="exp-type">3D · Blender</div>
+  </div>
+
+  <div class="exp-card reveal" style="transition-delay:0.1s">
+    <div class="exp-img">
+      <img src="/room.png" alt="Cozy Room Low Poly">
+    </div>
+    <div class="exp-name">Cozy Room Low Poly</div>
+    <div class="exp-type">3D · Blender</div>
+  </div>
+
+  <div class="exp-card reveal" style="transition-delay:0.15s">
+    <div class="exp-img">
+      <img src="/3d world.png" alt="Low Poly Forest World">
+    </div>
+    <div class="exp-name">Low Poly Forest World</div>
+    <div class="exp-type">3D · Blender</div>
+  </div>
+
+  <div class="exp-card reveal" style="transition-delay:0.2s">
+    <div class="exp-img">
+      <img src="/vending machine.png" alt="Vending machine">
+    </div>
+    <div class="exp-name">Vending Machine</div>
+    <div class="exp-type">2D & 3D · Blender · Grease Pencil</div>
+  </div>
+
+  <div class="exp-card reveal" style="transition-delay:0.25s">
+    <div class="exp-img">
+      <img src="/photo_6102857943473656139_y.jpg" alt="anime sketch">
+    </div>
+    <div class="exp-name">Anime Sketches</div>
+    <div class="exp-type">Hand Drawn · Krita</div>
+  </div>
+
+</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="eyebrow">About</div>
+  <div class="about-grid">
+
+    <div class="about-text reveal">
+      <h2 class="section-title" style="margin-bottom:30px">The person<br>behind the screens.</h2>
+      <p>I'm Kashish Gupta — a <strong>Game UI/UX Designer</strong> who's spent the last year designing interfaces for games that players actually ship, download, and play. I work at <em>Apex Dream Studio</em> remotely, handling everything from concept to final delivery.</p>
+      <p>I started as a Unity developer intern — writing game logic, setting up UI systems — before moving fully into design. That background means I understand what I'm handing off. I know how a button state works in code & what breaks in Unity.</p>
+      <p>I've designed for <strong>mobile, AR, and TV</strong> — card games with premium gold UI, AR fashion experiences, spooky casual games, and interactive mall installations. I also sketch, build low-poly worlds in Blender, and occasionally code small games from scratch.</p>
+      <p>Currently pursuing my <strong>BCA from Lovely Professional University</strong> alongside full-time work. Open to <em>Game UI/UX Designer roles, onsite or remote.</em></p>
+    </div>
+
+    <div class="reveal" style="transition-delay:0.1s">
+      <div class="skills-block">
+        <div class="skills-label">Proficient — use daily</div>
+        <div class="skills-row">
+          <span class="skill hi">Figma</span>
+          <span class="skill hi">Krita</span>
+          <span class="skill hi">Canva</span>
+        </div>
+      </div>
+
+      <div class="skills-block">
+        <div class="skills-label">Strong working knowledge</div>
+        <div class="skills-row">
+          <span class="skill">Blender — Low Poly &amp; Lighting</span>
+          <span class="skill">Adobe Animate — Frame-by-frame</span>
+          <span class="skill">Unity — UI &amp; Game Dev</span>
+        </div>
+      </div>
+
+      <div class="skills-block">
+        <div class="skills-label">Familiar with</div>
+        <div class="skills-row">
+          <span class="skill">Photoshop</span>
+          <span class="skill">HTML / CSS / JS</span>
+          <span class="skill">Godot basics</span>
+          <span class="skill">Elementor</span>
+        </div>
+      </div>
+
+      <div class="skills-block">
+        <div class="skills-label">Design specialties</div>
+        <div class="skills-row">
+          <span class="skill">Game UI Design</span>
+          <span class="skill">AR Interface Design</span>
+          <span class="skill">Mobile UI — iOS &amp; Android</span>
+          <span class="skill">TV / 10-foot UI</span>
+          <span class="skill">Play Store Assets</span>
+          <span class="skill">Marketing &amp; Promo Design</span>
+          <span class="skill">Motion Graphics</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="eyebrow">Experience &amp; Education</div>
+  <h2 class="section-title reveal">Where I've worked.</h2>
+  <p class="section-sub reveal">One year across two studios — from Unity development to full game UI design.</p>
+
+  <div class="exp-list">
+
+    <div class="exp-item reveal">
+      <div class="exp-top">
+        <div>
+          <div class="exp-company">Apex Dream Studio</div>
+          <div class="exp-role">Junior UI/UX Designer · Remote, Full-time</div>
+        </div>
+        <div class="exp-date">Nov 2025 – Present</div>
+      </div>
+      <ul class="exp-bullets">
+        <li>Designing end-to-end UI for mobile games across card, puzzle, casual, and AR genres — independently, from concept to final screens</li>
+        <li>Shipped complete UI systems for games including Gin Rummy Club and Dominoes, currently live on Play Store</li>
+        <li>Led UI design on two large-scale AR client projects — a fashion try-on experience and a voxel-based AR builder</li>
+        <li>Designed TV game experiences for interactive public installations in collaboration with external clients</li>
+        <li>Delivered full design pipeline on each project: concept → wireframes → high-fidelity UI → Play Store assets → developer handoff</li>
+      </ul>
+    </div>
+    <br>
+    <div class="exp-item reveal">
+      <div class="exp-top">
+        <div>
+          <div class="exp-company">Infinite Swipe Labs</div>
+          <div class="exp-role">UI/UX &amp; Graphic Design Intern · Remote</div>
+        </div>
+        <div class="exp-date">Jun 2025 – Nov 2025</div>
+      </div>
+      <ul class="exp-bullets">
+        <li>Designed complete UI for Fruit Merge Drop Mania — now live on Play Store with 10,000+ downloads</li>
+        <li>Created full Play Store asset suites: screenshots, game icons, promotional banners, and feature graphics</li>
+        <li>Designed character skins and popup UI for Banana Bounce Monkey Dash, also live with 5,000+ downloads</li>
+        <li>Produced trailer videos, marketing posters, and in-game graphic assets across multiple titles</li>
+        <li>Began as a Unity game developer before transitioning to UI/UX design — built foundational understanding of game development pipelines</li>
+      </ul>
+    </div>
+    <br>
+    <div class="edu-item reveal">
+      <div>
+        <div class="edu-degree">Bachelor of Computer Applications (BCA)</div>
+        <div class="edu-school">Lovely Professional University · Online · Semester 4 of 6</div>
+      </div>
+      <div class="edu-year">2024 – October 2027 (Expected)</div>
+    </div>
+    <BR>
+    <div class="edu-item reveal">
+      <div>
+        <div class="edu-degree">Senior Secondary</div>
+        <div class="edu-school">Radiant Stars English School · PCM</div>
+      </div>
+      <div class="edu-year">2023</div>
+    </div>
+    <br>
+    <div class="edu-item reveal">
+      <div>
+        <div class="edu-degree">Secondary</div>
+        <div class="edu-school">Radiant Stars English School </div>
+      </div>
+      <div class="edu-year">2021</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="eyebrow" style="justify-content:center">Get in touch</div>
+    <h2 class="contact-title reveal">Let's build<br>something <span>great.</span></h2>
+    <p class="contact-sub reveal">
+      Open to Game UI/UX Designer roles onsite or remote-first teams.<br>If you're building something interesting, I'd love to hear about it.
+    </p>
+    <div class="contact-links reveal">
+  
+      <a href="https://mail.google.com/mail/?view=cm&to=kashishgupta.work08@gmail.com" target="_blank" class="contact-link primary">✉ kashishgupta.work08@gmail.com</a>
+      <a href="https://www.linkedin.com/in/kashish-gupta08/" target="_blank" class="contact-link">LinkedIn</a>
+      <a href="https://www.behance.net/kashishgupta08" target="_blank" class="contact-link">Behance</a>
+      <a href="https://github.com/Kashh-08" target="_blank" class="contact-link">GitHub</a>
+      <a href="https://devbykash.itch.io/" target="_blank" class="contact-link">itch.io</a>
+      <a href="https://discord.com/users/1366634655557619783" target="_blank" class="contact-link">
+  Discord
+</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-name">Kashish Gupta · Game UI/UX Designer</div>
+  <div class="footer-note">Open to Work</div>
+</footer>
+
+<script>
+  // scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // nav active highlight
+  const secs = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.nav-links a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    secs.forEach(s => { if (window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    links.forEach(l => {
+      l.style.color = l.getAttribute('href') === '#' + cur ? 'var(--text)' : '';
+    });
+  });
+</script>
+</body>
+</html>
